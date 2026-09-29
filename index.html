@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Aakash Ma — Dashain in Kathmandu</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Rozha+One&display=swap');
@@ -92,11 +92,88 @@
     .playlist-songs { max-height:190px; overflow-y:auto; padding-right:4px; scrollbar-color:#c58a62 #eadfc8; scrollbar-width:thin; }
     .stage[data-view="dharahara"] .sun { right:31%; top:18%; background:#f8b55c; }.stage[data-view="dharahara"] .ridge { background:#9c6d58; }.stage[data-view="dharahara"] .ridge.back { background:#c08b69; }.stage[data-view="dharahara"] .city { background:#a96250; }.stage[data-view="dharahara"] .temple { left:42%; transform:scale(1.15); }.stage[data-view="dharahara"] .kids { left:50%; }
     @media(max-width:700px){ header{padding-top:20px}.festival{display:none}.intro{margin:7vh 8vw 0}.intro h1{font-size:66px}.sun{width:130px;height:130px}.panel{bottom:13px;width:92vw;display:block;padding:14px 16px;border-radius:28px}.track{margin-bottom:13px}.track .album{width:49px;height:49px;flex-basis:49px;font-size:22px}.track-info{padding-left:11px}.track strong{font-size:13px}.controls{justify-content:flex-end;gap:7px;flex-wrap:wrap}.sound{margin-left:auto}.sound .volume{width:58px}.credit{bottom:142px;right:8vw}.view-switcher{left:50%;right:auto;bottom:190px;justify-content:center;white-space:nowrap}.view-switcher button{padding:8px 7px}.playlist{left:4vw;right:4vw;bottom:220px;width:auto}.recommend-form{bottom:220px}.player-notice{bottom:260px;max-width:88vw;text-align:center} }
+
+    /* ===== Transport icons, hamburger menu and mobile layout ===== */
+    .stage { min-height:100vh; min-height:100dvh; }
+    .icon svg, .play svg, .queue svg { display:block; fill:currentColor; stroke:currentColor; }
+    .icon svg { width:18px; height:18px; }
+    .play svg { width:22px; height:22px; }
+    .queue svg { width:19px; height:19px; fill:none; }
+    .queue svg path { stroke:currentColor; }
+    .sound-icon { display:grid; place-items:center; color:rgba(255,248,239,.78); flex:0 0 auto; }
+    .sound-icon svg { display:block; width:18px; height:18px; }
+    .play { padding-left:0; }
+    .icon:focus-visible, .play:focus-visible, .queue:focus-visible { outline:2px solid #ffd778; outline-offset:2px; }
+    .hamburger-nav { display:none; position:relative; }
+    .hamburger-button { display:grid; place-items:center; width:34px; height:34px; padding:0; border:1px solid rgba(255,255,255,.35); border-radius:50%; background:rgba(35,51,61,.2); color:#fff; transition:background .2s ease,border-color .2s ease,color .2s ease; -webkit-tap-highlight-color:transparent; }
+    .hamburger-button:hover, .hamburger-button:focus-visible, .hamburger-nav.open .hamburger-button { background:#f6a20b; border-color:#ffd778; color:#241912; outline:none; }
+    .hamburger-button svg { width:16px; height:16px; overflow:visible; }
+    .hamburger-button .bar { stroke:currentColor; stroke-width:1.7; stroke-linecap:round; transform-box:fill-box; transform-origin:center; transition:transform .25s ease,opacity .2s ease; }
+    .hamburger-nav.open .bar.top { transform:translateY(4px) rotate(45deg); }
+    .hamburger-nav.open .bar.mid { opacity:0; transform:scaleX(.3); }
+    .hamburger-nav.open .bar.bot { transform:translateY(-4px) rotate(-45deg); }
+    .mobile-menu { position:absolute; top:calc(100% + 9px); left:0; width:min(240px,calc(100vw - 10vw)); max-height:calc(100vh - 110px); max-height:calc(100dvh - 110px); overflow-y:auto; padding:6px; border:1px solid rgba(255,255,255,.25); border-radius:14px; background:rgba(31,24,22,.96); box-shadow:0 12px 28px rgba(20,15,12,.3); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); opacity:0; visibility:hidden; pointer-events:none; transform:translateY(-6px); transition:opacity .2s ease,transform .2s ease,visibility .2s; }
+    .hamburger-nav.open .mobile-menu { opacity:1; visibility:visible; pointer-events:auto; transform:none; }
+    .mobile-item { display:flex; align-items:center; justify-content:space-between; width:100%; min-height:44px; padding:0 12px; border:0; border-radius:9px; background:transparent; color:#fff8ef; text-align:left; text-decoration:none; font:11px 'DM Mono',monospace; letter-spacing:.06em; text-transform:uppercase; -webkit-tap-highlight-color:transparent; }
+    .mobile-item:hover, .mobile-item:focus-visible, .mobile-item:active { background:#f6a20b; color:#241912; outline:none; }
+    .mobile-item + .mobile-item, .mobile-group + .mobile-item { margin-top:2px; }
+    .mobile-item .chevron { width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; transition:transform .2s ease; }
+    .mobile-group.open .chevron { transform:rotate(180deg); }
+    .mobile-theme-list { display:none; margin:2px 0 6px 14px; padding-left:8px; border-left:1px solid rgba(255,255,255,.18); }
+    .mobile-group.open .mobile-theme-list { display:block; }
+    .mobile-theme-list button { display:block; width:100%; min-height:40px; padding:0 10px; border:0; border-radius:8px; background:transparent; color:rgba(255,248,239,.82); text-align:left; font:11px 'DM Mono',monospace; -webkit-tap-highlight-color:transparent; }
+    .mobile-theme-list button:hover, .mobile-theme-list button:focus-visible, .mobile-theme-list button:active { background:rgba(246,162,11,.22); color:#ffd778; outline:none; }
+    .mobile-theme-list button.active { color:#ffd778; }
+    .mobile-theme-list button.active:before { content:""; display:inline-block; width:6px; height:6px; margin:0 8px 1px -2px; border-radius:50%; background:#f6a20b; }
+    @media(max-width:700px){
+      :root { --safe-b:env(safe-area-inset-bottom,0px); }
+      header { z-index:16; padding:calc(env(safe-area-inset-top,0px) + 18px) 5vw 0; pointer-events:none; }
+      header > * { pointer-events:auto; }
+      .hamburger-nav { display:block; }
+      .theme-nav, .header-recommend-button, .momo-button { display:none; }
+      .intro h1 { font-size:60px; }
+      .panel { bottom:calc(var(--safe-b) + 28px); width:calc(100vw - 24px); min-height:0; padding:12px 14px 12px 12px; border-radius:26px; }
+      .track { margin-bottom:12px; }
+      .controls { flex-wrap:nowrap; justify-content:flex-start; gap:8px; }
+      .icon { width:38px; height:38px; }
+      .play { width:46px; height:46px; }
+      .sound { margin-left:auto; gap:6px; min-width:0; }
+      .volume { width:54px; min-width:0; }
+      .queue { width:38px; height:38px; flex:0 0 38px; }
+      .view-switcher { bottom:calc(var(--safe-b) + 205px); }
+      .playlist { bottom:calc(var(--safe-b) + 235px); max-height:calc(100vh - 320px); max-height:min(430px,calc(100dvh - var(--safe-b) - 320px)); }
+      .playlist-songs { max-height:190px; max-height:max(80px,min(190px,calc(100dvh - var(--safe-b) - 480px))); }
+      .recommend-form { bottom:calc(var(--safe-b) + 235px); }
+      .player-notice { bottom:calc(var(--safe-b) + 275px); }
+    }
+    @media(max-width:700px) and (max-height:700px){
+      .intro { margin-top:2vh; }
+      .intro h1 { font-size:50px; margin:12px 0; }
+      .dek { font-size:13px; line-height:1.55; }
+    }
+    @media(max-width:360px){
+      .volume { width:42px; }
+      .controls { gap:6px; }
+      .icon { width:36px; height:36px; }
+    }
+    @media(max-width:700px) and (max-height:480px){
+      .intro { margin-top:1vh; }
+      .intro h1 { font-size:38px; margin:8px 0; }
+      .dek { display:none; }
+      .panel { bottom:calc(var(--safe-b) + 10px); display:flex; align-items:center; gap:12px; padding:8px 14px 8px 10px; }
+      .track { flex:1; margin-bottom:0; }
+      .controls { flex:0 0 auto; }
+      .view-switcher { bottom:calc(var(--safe-b) + 92px); }
+      .playlist { bottom:calc(var(--safe-b) + 92px); max-height:calc(100vh - 150px); max-height:calc(100dvh - var(--safe-b) - 150px); }
+      .playlist-songs { max-height:max(60px,calc(100dvh - var(--safe-b) - 270px)); }
+      .recommend-form { bottom:calc(var(--safe-b) + 92px); }
+      .player-notice { bottom:calc(var(--safe-b) + 130px); }
+    }
   </style>
 </head>
 <body>
   <main class="stage" data-view="tundikhel">
-    <header><div class="audience"><button class="audience-button" type="button" aria-label="Audience statistics"><span class="audience-dot"></span><span class="active-count">1 active</span></button><div class="audience-tooltip" role="status"><div><strong class="tooltip-active">1</strong> people active now</div><div><strong class="tooltip-visits">1</strong> visits on this browser</div></div></div><div class="theme-nav"><button class="theme-button" type="button" aria-haspopup="true" aria-expanded="false"><span class="theme-label">Themes</span></button><div class="theme-menu" role="menu"><button type="button" role="menuitem" data-mood="home">Home</button><button type="button" role="menuitem" data-mood="gf-bf">GF/BF ko yaad aayo</button><button type="button" role="menuitem" data-mood="soulful">Soulful Spiritual</button><button type="button" role="menuitem" data-mood="corporate">Corporate majdoori</button><button type="button" role="menuitem" data-mood="traveling">Traveling</button><button type="button" role="menuitem" data-mood="coffee">Coffee time</button><button type="button" role="menuitem" data-mood="workout">Workout</button></div></div><button class="recommend-button header-recommend-button" type="button">Recommend song</button><a class="momo-button" href="https://buymemomo.com/bibhushan" target="_blank" rel="noopener noreferrer">Buy me momo</a></header>
+    <header><div class="hamburger-nav"><button class="hamburger-button" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><svg viewBox="0 0 16 16" aria-hidden="true"><line class="bar top" x1="2.5" y1="4" x2="13.5" y2="4"/><line class="bar mid" x1="2.5" y1="8" x2="13.5" y2="8"/><line class="bar bot" x1="2.5" y1="12" x2="13.5" y2="12"/></svg></button><div class="mobile-menu" id="mobile-menu"><div class="mobile-group"><button class="mobile-item mobile-themes-toggle" type="button" aria-expanded="false">Themes<svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button><div class="mobile-theme-list"><button type="button" data-mood="home" class="active">Home</button><button type="button" data-mood="gf-bf">GF/BF ko yaad aayo</button><button type="button" data-mood="soulful">Soulful Spiritual</button><button type="button" data-mood="corporate">Corporate majdoori</button><button type="button" data-mood="traveling">Traveling</button><button type="button" data-mood="coffee">Coffee time</button><button type="button" data-mood="workout">Workout</button></div></div><button class="mobile-item mobile-recommend" type="button">Recommend song</button><a class="mobile-item" href="https://buymemomo.com/bibhushan" target="_blank" rel="noopener noreferrer">Buy me momo</a></div></div><div class="audience"><button class="audience-button" type="button" aria-label="Audience statistics"><span class="audience-dot"></span><span class="active-count">1 active</span></button><div class="audience-tooltip" role="status"><div><strong class="tooltip-active">1</strong> people active now</div><div><strong class="tooltip-visits">1</strong> visits on this browser</div></div></div><div class="theme-nav"><button class="theme-button" type="button" aria-haspopup="true" aria-expanded="false"><span class="theme-label">Themes</span></button><div class="theme-menu" role="menu"><button type="button" role="menuitem" data-mood="home">Home</button><button type="button" role="menuitem" data-mood="gf-bf">GF/BF ko yaad aayo</button><button type="button" role="menuitem" data-mood="soulful">Soulful Spiritual</button><button type="button" role="menuitem" data-mood="corporate">Corporate majdoori</button><button type="button" role="menuitem" data-mood="traveling">Traveling</button><button type="button" role="menuitem" data-mood="coffee">Coffee time</button><button type="button" role="menuitem" data-mood="workout">Workout</button></div></div><button class="recommend-button header-recommend-button" type="button">Recommend song</button><a class="momo-button" href="https://buymemomo.com/bibhushan" target="_blank" rel="noopener noreferrer">Buy me momo</a></header>
     <section class="intro"><h1 id="main-heading">Let the sky<br><em>sing.</em></h1><p class="dek" id="view-copy">Warm wind, bright kites, and the sound of home drifting over the rooftops of Kathmandu.</p></section>
     <div class="scene" aria-hidden="true"><div class="sun" role="button" tabindex="0" aria-label="Switch to Dashain night"></div></div>
     <div class="view-switcher" aria-label="Change Kathmandu view"><button class="active" data-view="tundikhel">Tundikhel</button><button data-view="dharahara">Dharahara</button><button data-view="swayambhu">Swayambhu</button></div>
@@ -104,7 +181,7 @@
     <div id="youtube-player" class="youtube-player" aria-hidden="true"></div>
     <iframe name="recommendation-mail-target" class="email-target" title="Recommendation delivery" aria-hidden="true"></iframe>
     <div class="recommend-form" aria-label="Recommend a song"><h2>Recommend a song</h2><p>Your recommendation is saved privately on this browser. No login needed.</p><form id="recommendation-form" action="https://formsubmit.co/bibhushanjung077@gmail.com" method="POST" target="recommendation-mail-target"><label for="song-name">Song name</label><input id="song-name" name="song" type="text" maxlength="25" required /><label for="song-author">Song author</label><input id="song-author" name="author" type="text" maxlength="25" required /><div class="recommend-actions"><button type="button" class="cancel-recommendation">Cancel</button><button type="submit" class="save-recommendation">Save recommendation</button></div></form><div class="recommendations" hidden><h3>Saved recommendations</h3><div class="recommendation-list"></div></div></div>
-    <div class="player-notice" role="status" aria-live="polite"></div><section class="panel" aria-label="Music player"><div class="track"><img class="album" alt="Current song thumbnail" src="https://i.ytimg.com/vi/IGEZtIOLOMQ/hqdefault.jpg" /><div class="track-info"><small>Now playing</small><strong class="track-title">Dashain radio</strong><span class="track-artist">YouTube playlist · Kathmandu</span><div class="time"><span class="current-time">00:00</span><span class="total-time">00:00</span></div><div class="progress" role="slider" aria-label="Track progress" tabindex="0"><div class="progress-fill"></div></div></div></div><div class="controls"><button class="icon previous" aria-label="Previous track">◀</button><button class="play" aria-label="Play music">▶</button><button class="icon next" aria-label="Next track">▶</button><div class="sound">♪ <input class="volume" type="range" min="0" max="100" value="72" aria-label="Volume"></div><button class="queue" type="button" aria-label="Show playlist" title="Show playlist">☷</button></div></section>
+    <div class="player-notice" role="status" aria-live="polite"></div><section class="panel" aria-label="Music player"><div class="track"><img class="album" alt="Current song thumbnail" src="https://i.ytimg.com/vi/IGEZtIOLOMQ/hqdefault.jpg" /><div class="track-info"><small>Now playing</small><strong class="track-title">Dashain radio</strong><span class="track-artist">YouTube playlist · Kathmandu</span><div class="time"><span class="current-time">00:00</span><span class="total-time">00:00</span></div><div class="progress" role="slider" aria-label="Track progress" tabindex="0"><div class="progress-fill"></div></div></div></div><div class="controls"><button class="icon previous" type="button" aria-label="Previous track"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="6" width="2.4" height="12" rx="1.2"/><path d="M18.5 6.6v10.8L10.4 12z" stroke-width="1.8" stroke-linejoin="round"/></svg></button><button class="play" type="button" aria-label="Play music" data-state="paused"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 5.8v12.4L18.8 12z" stroke-width="1.8" stroke-linejoin="round"/></svg></button><button class="icon next" type="button" aria-label="Next track"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="16.6" y="6" width="2.4" height="12" rx="1.2"/><path d="M5.5 6.6v10.8L13.6 12z" stroke-width="1.8" stroke-linejoin="round"/></svg></button><div class="sound"><span class="sound-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.6a7.6 7.6 0 0 1 0 10.8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span><input class="volume" type="range" min="0" max="100" value="72" aria-label="Volume"></div><button class="queue" type="button" aria-label="Show playlist" title="Show playlist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h10M5 12h10M5 17h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 14.6v4.2M16 16.7h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" transform="translate(-0.2 -0.4)"/></svg></button></div></section>
   </main>
   <script>
     const play = document.querySelector('.play');
@@ -147,7 +224,10 @@
     const renderThemePlaylist = mood => { const [name, description] = themePlaylists[mood] || themePlaylists.home; playlistTitle.textContent = name; playlistDescription.textContent = description; playlistSongs.innerHTML = '<p class="playlist-loading">Loading songs from YouTube...</p>'; };
     const renderYoutubeSongs = songs => { playlistSongs.innerHTML = ''; songs.forEach((song, index) => { const button = document.createElement('button'); button.className = `song${index === 0 ? ' active' : ''}`; button.type = 'button'; button.dataset.track = index; const name = document.createElement('b'); name.textContent = song; const number = document.createElement('span'); number.textContent = index + 1; button.append(name, number); playlistSongs.append(button); }); };
     const loadYoutubePlaylistNames = () => { if (!playerReady || !youtubePlayer || typeof youtubePlayer.getPlaylist !== 'function') return; const requestToken = ++playlistRequestToken; const videoIds = youtubePlayer.getPlaylist() || []; if (!videoIds.length) return; Promise.all(videoIds.map(videoId => fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}&format=json`).then(response => response.ok ? response.json() : null).then(data => data && data.title ? data.title : 'Untitled song').catch(() => 'Untitled song'))).then(songs => { if (requestToken === playlistRequestToken) renderYoutubeSongs(songs); }); };
-    const updatePlayButton = () => { const isPlaying = youtubePlayer && youtubePlayer.getPlayerState() === YT.PlayerState.PLAYING; play.textContent = isPlaying ? 'Ⅱ' : '▶'; play.setAttribute('aria-label', isPlaying ? 'Pause music' : 'Play music'); document.querySelector('.stage').classList.toggle('music-playing', Boolean(isPlaying)); };
+    const playIconMarkup = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 5.8v12.4L18.8 12z" stroke-width="1.8" stroke-linejoin="round"/></svg>';
+    const pauseIconMarkup = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.6" y="5.6" width="3.6" height="12.8" rx="1.4"/><rect x="13.8" y="5.6" width="3.6" height="12.8" rx="1.4"/></svg>';
+    const setPlayIcon = playing => { const state = playing ? 'playing' : 'paused'; if (play.dataset.state === state) return; play.dataset.state = state; play.innerHTML = playing ? pauseIconMarkup : playIconMarkup; };
+    const updatePlayButton = () => { const isPlaying = youtubePlayer && youtubePlayer.getPlayerState() === YT.PlayerState.PLAYING; setPlayIcon(Boolean(isPlaying)); play.setAttribute('aria-label', isPlaying ? 'Pause music' : 'Play music'); document.querySelector('.stage').classList.toggle('music-playing', Boolean(isPlaying)); };
     const loadVideoMetadata = video => { if (!video.video_id || video.video_id === metadataVideoId) return; metadataVideoId = video.video_id; artist.textContent = 'YouTube · YouTube playlist · Kathmandu'; fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${video.video_id}&format=json`).then(response => response.ok ? response.json() : null).then(data => { if (data && video.video_id === metadataVideoId) artist.textContent = `${data.author_name} · YouTube playlist · Kathmandu`; }).catch(() => {}); };
     const syncPlayer = () => { if (!playerReady) return; const duration = youtubePlayer.getDuration(); const elapsed = youtubePlayer.getCurrentTime(); const video = youtubePlayer.getVideoData(); if (video.title) title.textContent = video.title; if (video.video_id) { currentVideoId = video.video_id; album.src = `https://i.ytimg.com/vi/${video.video_id}/hqdefault.jpg`; album.alt = `${video.title || 'Current song'} thumbnail`; loadVideoMetadata(video); } currentTime.textContent = format(elapsed); totalTime.textContent = format(duration); fill.style.width = `${duration ? elapsed / duration * 100 : 0}%`; updatePlayButton(); };
     const refreshAfterVideoChange = () => { syncPlayer(); setTimeout(syncPlayer, 900); };
@@ -157,7 +237,7 @@
     const handlePlayerStateChange = event => { refreshAfterVideoChange(); if (event.data === YT.PlayerState.PAUSED && userWantsPlayback) { clearTimeout(resumeTimer); resumeTimer = setTimeout(() => { if (userWantsPlayback && youtubePlayer.getPlayerState() === YT.PlayerState.PAUSED) youtubePlayer.playVideo(); }, 350); } if (event.data === YT.PlayerState.ENDED && userWantsPlayback) advanceTrack('next'); if (event.data === YT.PlayerState.CUED && userWantsPlayback) youtubePlayer.playVideo(); };
     const rememberFailedTrack = (playlistId, video) => { try { const failed = JSON.parse(localStorage.getItem(failedTracksKey) || '{}'); const tracks = failed[playlistId] || []; const key = video.video_id || video.title || 'Unknown song'; if (!tracks.some(track => (track.video_id || track.title) === key)) { tracks.push({ video_id: video.video_id || '', title: video.title || 'Unknown title' }); failed[playlistId] = tracks; localStorage.setItem(failedTracksKey, JSON.stringify(failed)); } } catch {} };
     const createYoutubePlayer = (playlistId, startIndex = 0) => { youtubePlayer = new YT.Player('youtube-player', { width: '200', height: '200', playerVars: { autoplay: 0, controls: 0, disablekb: 1, listType: 'playlist', list: playlistId, origin: window.location.origin, playsinline: 1, rel: 0 }, events: { onReady: event => { playerReady = true; event.target.setVolume(72); setTimeout(loadYoutubePlaylistNames, 500); if (startIndex > 0) { event.target.loadPlaylist({ listType: 'playlist', list: playlistId, index: startIndex }); setTimeout(() => { if (userWantsPlayback) event.target.playVideo(); }, 900); } }, onStateChange: handlePlayerStateChange, onError: () => { const video = youtubePlayer.getVideoData() || {}; const videoUrl = typeof youtubePlayer.getVideoUrl === 'function' ? youtubePlayer.getVideoUrl() : ''; const videoId = video.video_id || currentVideoId || (videoUrl.match(/[?&]v=([^&]+)/) || [])[1] || ''; rememberFailedTrack(activePlaylistId, { video_id: videoId, title: video.title || title.textContent }); title.textContent = video.title || 'Unavailable song'; artist.textContent = 'Flagged and skipped'; showPlayerNotice('Bad song file skipped'); userWantsPlayback = true; clearTimeout(failedTrackTimer); failedTrackTimer = setTimeout(skipToNextTrack, 500); } } }); };
-    const switchPlaylist = (playlistId, mood = 'home') => { activePlaylistId = playlistId; pendingPlaylistId = playlistId; renderThemePlaylist(mood); currentVideoId = ''; userWantsPlayback = false; clearTimeout(resumeTimer); clearTimeout(failedTrackTimer); play.textContent = '▶'; play.setAttribute('aria-label', 'Play music'); title.textContent = 'Loading playlist...'; artist.textContent = 'YouTube playlist · Kathmandu'; currentTime.textContent = '00:00'; totalTime.textContent = '00:00'; fill.style.width = '0%'; document.querySelector('.stage').classList.remove('music-playing'); if (playerReady) { youtubePlayer.destroy(); playerReady = false; createYoutubePlayer(playlistId); } };
+    const switchPlaylist = (playlistId, mood = 'home') => { activePlaylistId = playlistId; pendingPlaylistId = playlistId; renderThemePlaylist(mood); currentVideoId = ''; userWantsPlayback = false; clearTimeout(resumeTimer); clearTimeout(failedTrackTimer); setPlayIcon(false); play.setAttribute('aria-label', 'Play music'); title.textContent = 'Loading playlist...'; artist.textContent = 'YouTube playlist · Kathmandu'; currentTime.textContent = '00:00'; totalTime.textContent = '00:00'; fill.style.width = '0%'; document.querySelector('.stage').classList.remove('music-playing'); if (playerReady) { youtubePlayer.destroy(); playerReady = false; createYoutubePlayer(playlistId); } };
     window.onYouTubeIframeAPIReady = () => createYoutubePlayer(activePlaylistId);
     play.addEventListener('click', () => { if (!playerReady) { artist.textContent = 'Loading music...'; return; } if (youtubePlayer.getPlayerState() === YT.PlayerState.PLAYING) { userWantsPlayback = false; clearTimeout(resumeTimer); youtubePlayer.pauseVideo(); } else { userWantsPlayback = true; youtubePlayer.playVideo(); } });
     document.querySelector('.previous').addEventListener('click', () => advanceTrack('previous'));
@@ -168,7 +248,7 @@
     const renderRecommendations = () => { recommendations.hidden = true; recommendationList.innerHTML = ''; };
     const closePanels = () => { playlist.classList.remove('open'); recommendForm.classList.remove('open'); };
     playlistSongs.addEventListener('click', event => { const song = event.target.closest('.song'); if (!song) return; playlistSongs.querySelector('.song.active')?.classList.remove('active'); song.classList.add('active'); const index = Number(song.dataset.track); if (playerReady && Number.isFinite(index)) youtubePlayer.playVideoAt(index); });
-    document.addEventListener('click', event => { if (!event.target.closest('.playlist, .recommend-form, .queue, .recommend-button')) closePanels(); });
+    document.addEventListener('click', event => { if (!event.target.closest('.playlist, .recommend-form, .queue, .recommend-button, .mobile-recommend')) closePanels(); });
     document.addEventListener('keydown', event => { if (event.key === 'Escape') closePanels(); });
     queueButton.addEventListener('click', () => { const open = !playlist.classList.contains('open'); closePanels(); if (open) playlist.classList.add('open'); });
     recommendButton.addEventListener('click', () => { const open = !recommendForm.classList.contains('open'); closePanels(); if (open) { recommendForm.classList.add('open'); renderRecommendations(); document.querySelector('#song-name').focus(); } });
@@ -208,7 +288,19 @@
     const themeButton = document.querySelector('.theme-button');
     themeButton.addEventListener('click', () => { const open = themeNav.classList.toggle('open'); themeButton.setAttribute('aria-expanded', String(open)); });
     renderThemePlaylist('home');
-    document.querySelectorAll('.theme-menu button').forEach(item => item.addEventListener('click', () => { const mood = item.dataset.mood; document.querySelector('.theme-label').textContent = item.textContent; stage.classList.remove('night'); if (mood === 'home') { delete stage.dataset.mood; stage.dataset.view = 'tundikhel'; document.querySelector('.view-switcher .active').classList.remove('active'); document.querySelector('.view-switcher button[data-view="tundikhel"]').classList.add('active'); mainHeading.innerHTML = 'Let the sky<br><em>sing.</em>'; viewCopy.textContent = 'Warm wind, bright kites, and the sound of home drifting over the rooftops of Kathmandu.'; } else { stage.dataset.mood = mood; mainHeading.innerHTML = moods[mood][0]; viewCopy.textContent = moods[mood][1]; } if (playlistIds[mood]) switchPlaylist(playlistIds[mood], mood); themeNav.classList.remove('open'); themeButton.setAttribute('aria-expanded', 'false'); }));
+    document.querySelectorAll('.theme-menu button, .mobile-theme-list button').forEach(item => item.addEventListener('click', () => { const mood = item.dataset.mood; syncThemeActive(mood); closeMobileMenu(); document.querySelector('.theme-label').textContent = item.textContent; stage.classList.remove('night'); if (mood === 'home') { delete stage.dataset.mood; stage.dataset.view = 'tundikhel'; document.querySelector('.view-switcher .active').classList.remove('active'); document.querySelector('.view-switcher button[data-view="tundikhel"]').classList.add('active'); mainHeading.innerHTML = 'Let the sky<br><em>sing.</em>'; viewCopy.textContent = 'Warm wind, bright kites, and the sound of home drifting over the rooftops of Kathmandu.'; } else { stage.dataset.mood = mood; mainHeading.innerHTML = moods[mood][0]; viewCopy.textContent = moods[mood][1]; } if (playlistIds[mood]) switchPlaylist(playlistIds[mood], mood); themeNav.classList.remove('open'); themeButton.setAttribute('aria-expanded', 'false'); }));
+    const hamburgerNav = document.querySelector('.hamburger-nav');
+    const hamburgerButton = document.querySelector('.hamburger-button');
+    const mobileGroup = document.querySelector('.mobile-group');
+    const mobileThemesToggle = document.querySelector('.mobile-themes-toggle');
+    function closeMobileMenu() { hamburgerNav.classList.remove('open'); hamburgerButton.setAttribute('aria-expanded', 'false'); hamburgerButton.setAttribute('aria-label', 'Open menu'); mobileGroup.classList.remove('open'); mobileThemesToggle.setAttribute('aria-expanded', 'false'); }
+    function syncThemeActive(mood) { document.querySelectorAll('.mobile-theme-list button').forEach(item => item.classList.toggle('active', item.dataset.mood === mood)); }
+    hamburgerButton.addEventListener('click', () => { const open = !hamburgerNav.classList.contains('open'); if (open) { closePanels(); themeNav.classList.remove('open'); } hamburgerNav.classList.toggle('open', open); hamburgerButton.setAttribute('aria-expanded', String(open)); hamburgerButton.setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); if (!open) closeMobileMenu(); });
+    mobileThemesToggle.addEventListener('click', () => { const open = mobileGroup.classList.toggle('open'); mobileThemesToggle.setAttribute('aria-expanded', String(open)); });
+    document.querySelector('.mobile-recommend').addEventListener('click', () => { closeMobileMenu(); recommendButton.click(); });
+    document.addEventListener('click', event => { if (!event.target.closest('.hamburger-nav')) closeMobileMenu(); });
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') closeMobileMenu(); });
+    window.matchMedia('(min-width:701px)').addEventListener('change', event => { if (event.matches) closeMobileMenu(); });
     const youtubeScript = document.createElement('script'); youtubeScript.async = true; youtubeScript.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(youtubeScript);
   </script>
 </body>
