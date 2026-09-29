@@ -23,6 +23,15 @@
     .stage[data-mood="workout"] { background-image:url('workout theme.png'); }
     .stage[data-mood="soulful"] { background-image:url('soulful theme.png'),url('Dashain theme 1.png'); }
     .stage[data-mood] .view-switcher { display:none; }
+    .stage[data-mood] .intro { width:min(650px,86vw); text-shadow:0 3px 18px rgba(8,17,26,.72); }
+    .stage[data-mood] h1 { color:#fff8ef; text-shadow:0 3px 0 rgba(8,17,26,.55),0 5px 24px rgba(8,17,26,.8); }
+    .stage[data-mood] h1 em { color:#ffd36a; }
+    .stage[data-mood] .dek { color:rgba(255,248,239,.9); text-shadow:0 2px 12px rgba(8,17,26,.85); }
+    .stage[data-mood="traveling"] .intro, .stage[data-mood="coffee"] .intro { margin-top:10vh; margin-left:8vw; }
+    .stage[data-mood="corporate"] .intro, .stage[data-mood="workout"] .intro { margin-top:12vh; margin-left:8vw; }
+    .stage[data-mood="soulful"] .intro { margin-top:9vh; margin-left:7vw; }
+    .stage[data-mood="gf-bf"] .intro { margin-top:11vh; margin-left:8vw; }
+    .stage[data-mood="traveling"] h1, .stage[data-mood="coffee"] h1 { color:#fff8ef; }
     .stage:before { content:""; position:absolute; inset:0; opacity:.06; background-image:radial-gradient(#fff 0.8px,transparent .8px); background-size:9px 9px; mix-blend-mode:soft-light; pointer-events:none; }
     header { position:relative; z-index:5; display:flex; align-items:center; justify-content:flex-start; padding:28px 5vw 0; }
     header { gap:12px; }.audience { position:relative; }.audience-button, .theme-button { display:flex; align-items:center; gap:8px; width:112px; height:34px; padding:0 12px; border:1px solid rgba(255,255,255,.35); border-radius:22px; background:rgba(35,51,61,.2); color:#fff; font:10px 'DM Mono',monospace; letter-spacing:.05em; text-transform:uppercase; cursor:pointer; white-space:nowrap; }.audience-button { cursor:default; justify-content:flex-start; }.audience-dot { width:7px; height:7px; flex:0 0 7px; border-radius:50%; background:#8bd36d; box-shadow:0 0 0 4px rgba(139,211,109,.18); }.audience-tooltip { position:absolute; top:calc(100% + 9px); left:0; width:220px; padding:10px 12px; border:1px solid rgba(255,255,255,.25); border-radius:8px; background:rgba(31,24,22,.94); color:#fff8ef; font:10px/1.6 'DM Mono',monospace; opacity:0; pointer-events:none; transform:translateY(-4px); transition:.2s ease; }.audience:hover .audience-tooltip, .audience:focus-within .audience-tooltip { opacity:1; transform:none; }
@@ -154,7 +163,7 @@
     progress.addEventListener('click', event => { if (!playerReady) return; const duration = youtubePlayer.getDuration(); const rect = progress.getBoundingClientRect(); youtubePlayer.seekTo(Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)) * duration, true); });
     document.querySelector('.volume').addEventListener('input', event => { if (playerReady) youtubePlayer.setVolume(Number(event.target.value)); });
     const readRecommendations = () => { try { const saved = JSON.parse(localStorage.getItem(recommendationsKey) || '[]'); return Array.isArray(saved) ? saved : []; } catch { return []; } };
-    const renderRecommendations = () => { const saved = readRecommendations(); recommendationList.innerHTML = ''; recommendations.hidden = saved.length === 0; saved.forEach(item => { const entry = document.createElement('div'); entry.className = 'recommendation-item'; entry.textContent = item.song; const author = document.createElement('small'); author.textContent = item.author; entry.append(author); recommendationList.append(entry); }); };
+    const renderRecommendations = () => { recommendations.hidden = true; recommendationList.innerHTML = ''; };
     const closePanels = () => { playlist.classList.remove('open'); recommendForm.classList.remove('open'); };
     playlistSongs.addEventListener('click', event => { const song = event.target.closest('.song'); if (!song) return; playlistSongs.querySelector('.song.active')?.classList.remove('active'); song.classList.add('active'); const index = Number(song.dataset.track); if (playerReady && Number.isFinite(index)) youtubePlayer.playVideoAt(index); });
     document.addEventListener('click', event => { if (!event.target.closest('.playlist, .recommend-form, .queue, .recommend-button')) closePanels(); });
@@ -162,7 +171,7 @@
     queueButton.addEventListener('click', () => { const open = !playlist.classList.contains('open'); closePanels(); if (open) playlist.classList.add('open'); });
     recommendButton.addEventListener('click', () => { const open = !recommendForm.classList.contains('open'); closePanels(); if (open) { recommendForm.classList.add('open'); renderRecommendations(); document.querySelector('#song-name').focus(); } });
     document.querySelector('.cancel-recommendation').addEventListener('click', closePanels);
-    recommendationForm.addEventListener('submit', event => { event.preventDefault(); const data = new FormData(recommendationForm); const saved = readRecommendations(); saved.push({ song: String(data.get('song')).trim(), author: String(data.get('author')).trim() }); localStorage.setItem(recommendationsKey, JSON.stringify(saved)); recommendationForm.reset(); renderRecommendations(); showPlayerNotice('Recommendation saved privately'); });
+    recommendationForm.addEventListener('submit', event => { event.preventDefault(); const data = new FormData(recommendationForm); const saved = readRecommendations(); saved.push({ song: String(data.get('song')).trim(), author: String(data.get('author')).trim(), receivedAt: new Date().toISOString() }); localStorage.setItem(recommendationsKey, JSON.stringify(saved)); recommendationForm.reset(); closePanels(); showPlayerNotice('Recommendation received'); });
     setInterval(syncPlayer, 500);
     const stage = document.querySelector('.stage');
     const sun = document.querySelector('.sun');
@@ -177,12 +186,15 @@
     sun.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggleNight(); } });
     const audienceKey = 'dashain-ma-active-users';
     const visitsKey = 'dashain-ma-total-visits';
+    const audienceSeedKey = 'dashain-ma-audience-seed';
+    const audienceDisplayKey = 'dashain-ma-audience-display';
     const audienceId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const activeCount = document.querySelector('.active-count');
     const tooltipActive = document.querySelector('.tooltip-active');
     const tooltipVisits = document.querySelector('.tooltip-visits');
     const readActive = () => { try { const users = JSON.parse(localStorage.getItem(audienceKey) || '{}'); const now = Date.now(); const active = Object.fromEntries(Object.entries(users).filter(([, timestamp]) => now - timestamp < 15000)); localStorage.setItem(audienceKey, JSON.stringify(active)); return Object.keys(active).length; } catch { return 1; } };
-    const updateAudience = () => { const active = 999 + Math.max(1, readActive()); const visits = Math.max(1000, Number(localStorage.getItem(visitsKey) || 0)); activeCount.textContent = `${active} active`; tooltipActive.textContent = active; tooltipVisits.textContent = visits; };
+    const getAudienceNumber = () => { try { let current = Number(localStorage.getItem(audienceDisplayKey)); if (!Number.isFinite(current) || current < 1000 || current > 1500) { current = Number(localStorage.getItem(audienceSeedKey)); if (!Number.isFinite(current) || current < 1000 || current > 1500) { current = 1000 + Math.floor(Math.random() * 501); localStorage.setItem(audienceSeedKey, String(current)); } } current = Math.max(1000, Math.min(1500, current + Math.floor(Math.random() * 15) - 7)); localStorage.setItem(audienceDisplayKey, String(current)); return current; } catch { return 1200; } };
+    const updateAudience = () => { const active = getAudienceNumber(); const visits = Math.max(1000, Number(localStorage.getItem(visitsKey) || 0)); activeCount.textContent = `${active} active`; tooltipActive.textContent = active; tooltipVisits.textContent = visits; };
     try { const storedVisits = Math.max(1000, Number(localStorage.getItem(visitsKey) || 0)); localStorage.setItem(visitsKey, String(storedVisits + 1)); } catch {}
     const touchAudience = () => { try { const users = JSON.parse(localStorage.getItem(audienceKey) || '{}'); users[audienceId] = Date.now(); localStorage.setItem(audienceKey, JSON.stringify(users)); } catch {} updateAudience(); };
     touchAudience();
